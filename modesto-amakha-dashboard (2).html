@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modesto Growth Partners — Dashboard Amakha Paris</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap');
+  :root {
+    --mg-black:#0a0a0a;--mg-gold:#B8973B;--mg-gold-light:#D4AF5A;
+    --ak-gold:#C9963A;--ak-dark:#2C2418;--ak-cream:#F8F4EE;
+    --bg:#F4F1EC;--surface:#FFFFFF;--surface2:#F9F7F3;
+    --text-primary:#1A1A1A;--text-secondary:#666;--text-muted:#999;
+    --border:#E5E0D8;--shadow:0 2px 12px rgba(0,0,0,0.07);
+    --shadow-lg:0 8px 32px rgba(0,0,0,0.10);--radius:12px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;}
+
+  /* LOGIN */
+  #login-screen{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:var(--mg-black);overflow:hidden;}
+  .login-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(184,151,59,.15) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(184,151,59,.08) 0%,transparent 50%);}
+  .login-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(184,151,59,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(184,151,59,.04) 1px,transparent 1px);background-size:60px 60px;}
+  .login-card{position:relative;z-index:2;background:rgba(255,255,255,.04);border:1px solid rgba(184,151,59,.2);border-radius:20px;padding:56px 48px;width:460px;backdrop-filter:blur(20px);}
+  .login-logo{display:flex;align-items:center;gap:12px;margin-bottom:40px;}
+  .login-logo-icon{width:44px;height:44px;background:var(--mg-gold);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;font-size:20px;color:#fff;}
+  .login-logo-text{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#fff;}
+  .login-logo-sub{font-size:10px;color:var(--mg-gold);letter-spacing:2px;text-transform:uppercase;}
+  .login-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#fff;margin-bottom:8px;}
+  .login-subtitle{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:36px;line-height:1.5;}
+  .user-selector{display:flex;gap:8px;margin-bottom:28px;background:rgba(255,255,255,.05);border-radius:10px;padding:4px;}
+  .user-btn{flex:1;padding:10px 16px;background:transparent;border:none;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:rgba(255,255,255,.5);transition:all .2s;}
+  .user-btn.active{background:var(--mg-gold);color:#fff;}
+  .form-group{margin-bottom:18px;}
+  .form-label{display:block;font-size:12px;font-weight:500;color:rgba(255,255,255,.5);margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase;}
+  .form-input{width:100%;padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;color:#fff;outline:none;transition:border-color .2s;}
+  .form-input:focus{border-color:var(--mg-gold);}
+  .form-input::placeholder{color:rgba(255,255,255,.25);}
+  .login-btn{width:100%;padding:16px;background:var(--mg-gold);border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;color:#fff;cursor:pointer;margin-top:8px;transition:all .2s;}
+  .login-btn:hover{background:var(--mg-gold-light);transform:translateY(-1px);}
+  .login-error{color:#FF6B6B;font-size:13px;margin-top:12px;display:none;text-align:center;}
+  .login-footer{margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:rgba(255,255,255,.3);text-align:center;}
+
+  /* APP */
+  #app{display:none;}
+  #app.visible{display:flex;}
+  .sidebar{width:240px;min-height:100vh;background:var(--mg-black);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;}
+  .sidebar-logo{padding:28px 24px 24px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;}
+  .sidebar-logo-icon{width:36px;height:36px;background:var(--mg-gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;font-size:16px;color:#fff;}
+  .sidebar-logo-text{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#fff;}
+  .sidebar-logo-sub{font-size:9px;color:var(--mg-gold);letter-spacing:2px;text-transform:uppercase;}
+  .sidebar-client{margin:16px 16px 0;padding:14px 16px;background:rgba(184,151,59,.1);border:1px solid rgba(184,151,59,.2);border-radius:10px;}
+  .sidebar-client-label{font-size:10px;color:var(--mg-gold);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:4px;}
+  .sidebar-client-name{font-size:14px;font-weight:600;color:#fff;}
+  .sidebar-nav{padding:20px 12px;flex:1;}
+  .nav-section-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);padding:0 12px;margin-bottom:8px;margin-top:16px;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:rgba(255,255,255,.55);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;margin-bottom:2px;text-decoration:none;}
+  .nav-item:hover{background:rgba(255,255,255,.06);color:#fff;}
+  .nav-item.active{background:rgba(184,151,59,.15);color:var(--mg-gold);}
+  .sidebar-bottom{padding:16px;border-top:1px solid rgba(255,255,255,.06);}
+  .sidebar-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;}
+  .sidebar-avatar{width:32px;height:32px;border-radius:50%;background:var(--ak-gold);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;}
+  .sidebar-user-name{font-size:13px;font-weight:600;color:#fff;}
+  .sidebar-user-role{font-size:11px;color:rgba(255,255,255,.4);}
+  .logout-btn{font-size:13px;color:rgba(255,255,255,.3);cursor:pointer;transition:color .15s;background:none;border:none;}
+  .logout-btn:hover{color:#FF6B6B;}
+
+  /* MAIN */
+  .main{margin-left:240px;flex:1;min-height:100vh;display:flex;flex-direction:column;}
+  .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+  .topbar-left{display:flex;align-items:center;gap:16px;}
+  .page-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
+  .live-badge{display:flex;align-items:center;gap:6px;padding:4px 10px;background:rgba(45,106,79,.1);border:1px solid rgba(45,106,79,.25);border-radius:20px;font-size:12px;font-weight:600;color:#2D6A4F;}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:#2D6A4F;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .topbar-date{font-size:13px;color:var(--text-secondary);}
+  .source-badge{font-size:11px;color:var(--mg-gold);background:rgba(184,151,59,.1);border:1px solid rgba(184,151,59,.25);padding:3px 8px;border-radius:12px;font-weight:600;}
+
+  /* FILTER */
+  .filter-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .quick-btn{padding:7px 14px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);font-size:13px;font-weight:500;cursor:pointer;color:var(--text-secondary);transition:all .15s;}
+  .quick-btn:hover,.quick-btn.active{background:var(--mg-gold);border-color:var(--mg-gold);color:#fff;}
+  .date-range{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;}
+  .date-range input{border:none;background:transparent;font-family:'Inter',sans-serif;font-size:13px;color:var(--text-primary);outline:none;}
+  .apply-btn{padding:7px 18px;border-radius:8px;background:var(--mg-black);border:none;font-size:13px;font-weight:600;color:#fff;cursor:pointer;transition:all .15s;}
+  .apply-btn:hover{background:var(--mg-gold);}
+  .filter-info{margin-left:auto;font-size:12px;color:var(--text-muted);}
+
+  /* CONTENT */
+  .content{padding:32px;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* BRAND HEADER */
+  .brand-header{background:linear-gradient(135deg,var(--ak-dark) 0%,#3D3020 50%,var(--ak-dark) 100%);border-radius:var(--radius);padding:28px 32px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;}
+  .brand-header::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(201,150,58,.15);}
+  .brand-eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ak-gold);margin-bottom:8px;}
+  .brand-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#fff;margin-bottom:4px;}
+  .brand-period{font-size:13px;color:rgba(255,255,255,.5);}
+  .brand-stats{display:flex;gap:32px;position:relative;z-index:1;}
+  .brand-stat-item{text-align:right;}
+  .brand-stat-value{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ak-gold);}
+  .brand-stat-label{font-size:11px;color:rgba(255,255,255,.5);}
+
+  /* SECTION LABEL */
+  .section-label{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .section-label-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .section-label-text{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-secondary);}
+
+  /* KPI GRID */
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;margin-bottom:28px;}
+  .kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 20px;position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s;}
+  .kpi-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
+  .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+  .kpi-card.gold::before{background:linear-gradient(90deg,var(--mg-gold),var(--mg-gold-light));}
+  .kpi-card.green::before{background:linear-gradient(90deg,#2D6A4F,#40916C);}
+  .kpi-card.blue::before{background:linear-gradient(90deg,#1565C0,#1E88E5);}
+  .kpi-card.purple::before{background:linear-gradient(90deg,#6A1B9A,#8E24AA);}
+  .kpi-card.red::before{background:linear-gradient(90deg,#B71C1C,#E53935);}
+  .kpi-card.teal::before{background:linear-gradient(90deg,#00695C,#00897B);}
+  .kpi-label{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;}
+  .kpi-value{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--text-primary);line-height:1;margin-bottom:8px;}
+  .kpi-sub{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;}
+  .kpi-delta{font-size:12px;font-weight:600;padding:2px 6px;border-radius:4px;}
+  .kpi-delta.up{background:rgba(45,106,79,.1);color:#2D6A4F;}
+  .kpi-delta.down{background:rgba(183,28,28,.1);color:#B71C1C;}
+  .kpi-icon{position:absolute;right:16px;top:18px;font-size:22px;opacity:.12;}
+
+  /* CHARTS */
+  .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;}
+  .charts-grid.full{grid-template-columns:1fr;}
+  .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;}
+  .chart-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;}
+  .chart-title{font-size:14px;font-weight:700;color:var(--text-primary);}
+  .chart-subtitle{font-size:12px;color:var(--text-muted);margin-top:3px;}
+  .chart-legend{display:flex;gap:16px;flex-wrap:wrap;}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);}
+  .legend-dot{width:10px;height:10px;border-radius:50%;}
+
+  /* TABLE */
+  .table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:28px;}
+  .table-header-row{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .table-title{font-size:14px;font-weight:700;}
+  .table-search{padding:8px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-primary);outline:none;font-family:'Inter',sans-serif;width:220px;}
+  table{width:100%;border-collapse:collapse;}
+  thead{background:var(--surface2);}
+  th{padding:12px 20px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);white-space:nowrap;cursor:pointer;user-select:none;}
+  th:hover{color:var(--text-primary);}
+  td{padding:14px 20px;font-size:13px;color:var(--text-primary);white-space:nowrap;border-bottom:1px solid var(--border);}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:var(--surface2);}
+  .campaign-name{font-weight:600;max-width:260px;overflow:hidden;text-overflow:ellipsis;}
+  .status-badge{padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+  .status-active{background:rgba(45,106,79,.1);color:#2D6A4F;}
+  .status-paused{background:rgba(183,28,28,.08);color:#B71C1C;}
+  .perf-bar{width:80px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px;}
+  .perf-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--mg-gold),var(--mg-gold-light));}
+
+  /* FUNNEL */
+  .funnel-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-bottom:28px;}
+  .funnel-step{background:var(--surface);border:1px solid var(--border);padding:20px 18px;text-align:center;border-right:none;position:relative;}
+  .funnel-step:first-child{border-radius:var(--radius) 0 0 var(--radius);}
+  .funnel-step:last-child{border-radius:0 var(--radius) var(--radius) 0;border-right:1px solid var(--border);}
+  .funnel-step::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--mg-gold);font-size:20px;z-index:1;background:var(--bg);padding:2px;}
+  .funnel-step:last-child::after{display:none;}
+  .funnel-step-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;}
+  .funnel-step-value{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--text-primary);margin-bottom:4px;}
+  .funnel-step-rate{font-size:12px;color:var(--mg-gold);font-weight:600;}
+
+  /* ALERTS */
+  .alerts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;}
+  .alert-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;border-left:4px solid;}
+  .alert-card.warning{border-left-color:#F4A623;}
+  .alert-card.success{border-left-color:#2D6A4F;}
+  .alert-card.danger{border-left-color:#B71C1C;}
+  .alert-card.info{border-left-color:#1565C0;}
+  .alert-title{font-size:13px;font-weight:700;margin-bottom:4px;}
+  .alert-body{font-size:12px;color:var(--text-secondary);line-height:1.5;}
+
+  @media(max-width:1200px){.charts-grid{grid-template-columns:1fr;}.funnel-grid{grid-template-columns:1fr 1fr;}.funnel-step::after{display:none;}.funnel-step{border-right:1px solid var(--border);border-radius:8px!important;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-bg"></div>
+  <div class="login-grid"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">M</div>
+      <div><div class="login-logo-text">MODESTO</div><div class="login-logo-sub">Growth Partners</div></div>
+    </div>
+    <h1 class="login-title">Bem-vindo</h1>
+    <p class="login-subtitle">Acesse sua conta para visualizar as métricas reais da Amakha Paris via Windsor.ai.</p>
+    <div class="user-selector">
+      <button class="user-btn active" onclick="setUser('agencia',this)">🏢 Agência</button>
+      <button class="user-btn" onclick="setUser('cliente',this)">👤 Cliente</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Usuário</label>
+      <input class="form-input" type="text" id="login-user" placeholder="Digite seu usuário">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Senha</label>
+      <input class="form-input" type="password" id="login-pass" placeholder="Digite sua senha">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Entrar no Dashboard →</button>
+    <div class="login-error" id="login-error">Usuário ou senha incorretos.</div>
+    <div class="login-footer">Dados em tempo real via Windsor.ai · Modesto Growth Partners · 2026</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">M</div>
+      <div><div class="sidebar-logo-text">MODESTO</div><div class="sidebar-logo-sub">Growth Partners</div></div>
+    </div>
+    <div class="sidebar-client">
+      <div class="sidebar-client-label">Cliente Ativo</div>
+      <div class="sidebar-client-name">Amakha Paris</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Visão Geral</div>
+      <a class="nav-item active" onclick="showPanel('overview',this)" href="#">📊 Resumo Geral</a>
+      <a class="nav-item" onclick="showPanel('google',this)" href="#">🎯 Google Ads</a>
+      <a class="nav-item" onclick="showPanel('meta',this)" href="#">📱 Meta Ads</a>
+      <a class="nav-item" onclick="showPanel('campaigns',this)" href="#">📋 Campanhas</a>
+      <div class="nav-section-label">Análise</div>
+      <a class="nav-item" onclick="showPanel('funnel',this)" href="#">🔽 Funil de Conversão</a>
+      <a class="nav-item" onclick="showPanel('performance',this)" href="#">⚡ Performance</a>
+      <a class="nav-item" onclick="showPanel('alerts',this)" href="#">🔔 Alertas</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sb-avatar">A</div>
+        <div style="flex:1"><div class="sidebar-user-name" id="sb-name">Amakha Paris</div><div class="sidebar-user-role" id="sb-role">Cliente</div></div>
+        <button class="logout-btn" onclick="doLogout()">✕</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title" id="page-title">Resumo Geral</h1>
+        <div class="live-badge"><div class="live-dot"></div> Ao vivo · D-1</div>
+        <span class="source-badge">⚡ Windsor.ai</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="topbar-date">15 de jun. de 2026</span>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <button class="quick-btn" onclick="setRange(7,this)">7 dias</button>
+      <button class="quick-btn" onclick="setRange(14,this)">14 dias</button>
+      <button class="quick-btn active" onclick="setRange(30,this)">30 dias</button>
+      <button class="quick-btn" onclick="setRange(90,this)">90 dias</button>
+      <div class="date-range">
+        <input type="date" id="date-from" value="2026-05-17">
+        <span style="color:var(--text-muted)">→</span>
+        <input type="date" id="date-to" value="2026-06-15">
+      </div>
+      <button class="apply-btn" onclick="applyFilter()">Aplicar</button>
+      <span class="filter-info">Atualizado em 19:48 · 15 jun. 2026 <span style="cursor:pointer" onclick="this.textContent='↻ Atualizando...'">↻</span></span>
+    </div>
+
+    <div class="content">
+
+      <!-- OVERVIEW -->
+      <div class="tab-panel active" id="panel-overview">
+        <div class="brand-header">
+          <div>
+            <div class="brand-eyebrow">Dashboard · Marketing Performance · Dados Reais via Windsor.ai</div>
+            <div class="brand-title">Amakha Paris</div>
+            <div class="brand-period">17 de mai a 15 de jun de 2026</div>
+          </div>
+          <div class="brand-stats">
+            <div class="brand-stat-item"><div class="brand-stat-value">$76.1k</div><div class="brand-stat-label">Invest. Total</div></div>
+            <div class="brand-stat-item"><div class="brand-stat-value">7.47M</div><div class="brand-stat-label">Impressões</div></div>
+            <div class="brand-stat-item"><div class="brand-stat-value">332</div><div class="brand-stat-label">Conversões GA</div></div>
+          </div>
+        </div>
+
+        <div class="section-label">
+          <div class="section-label-icon" style="background:rgba(184,151,59,.12)">📊</div>
+          <span class="section-label-text">Resumo Geral · 17 mai – 15 jun 2026</span>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card gold"><span class="kpi-icon">💰</span><div class="kpi-label">Invest. Total</div><div class="kpi-value">$76.1k</div><div class="kpi-sub">Google + Meta</div></div>
+          <div class="kpi-card blue"><span class="kpi-icon">👁</span><div class="kpi-label">Impressões</div><div class="kpi-value">7.47M</div><div class="kpi-sub">Todos os canais</div></div>
+          <div class="kpi-card green"><span class="kpi-icon">🖱</span><div class="kpi-label">Cliques Totais</div><div class="kpi-value">181.2k</div><div class="kpi-sub">Google + Meta</div></div>
+          <div class="kpi-card teal"><span class="kpi-icon">✅</span><div class="kpi-label">Conversões</div><div class="kpi-value">331.9</div><div class="kpi-sub">Google Ads</div></div>
+          <div class="kpi-card purple"><span class="kpi-icon">📈</span><div class="kpi-label">CTR Médio</div><div class="kpi-value">2.43%</div><div class="kpi-sub">Todos os canais</div></div>
+          <div class="kpi-card red"><span class="kpi-icon">🎯</span><div class="kpi-label">CPA Médio</div><div class="kpi-value">$151.71</div><div class="kpi-sub">Google Ads</div></div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <div><div class="chart-title">Investimento Diário</div><div class="chart-subtitle">Google Ads vs Meta Ads (USD) — dados reais</div></div>
+              <div class="chart-legend"><div class="legend-item"><div class="legend-dot" style="background:#B8973B"></div>Google</div><div class="legend-item"><div class="legend-dot" style="background:#888"></div>Meta</div></div>
+            </div>
+            <div style="height:220px;position:relative"><canvas id="chart-invest"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <div><div class="chart-title">CPA × Conversões Diárias</div><div class="chart-subtitle">Google Ads — custo por aquisição real</div></div>
+            </div>
+            <div style="height:220px;position:relative"><canvas id="chart-cpa"></canvas></div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header"><div><div class="chart-title">CTR por Canal</div><div class="chart-subtitle">Taxa média — dados reais</div></div></div>
+            <div style="height:200px;position:relative"><canvas id="chart-ctr-bar"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header"><div><div class="chart-title">Cliques Diários</div><div class="chart-subtitle">Google vs Meta — evolução</div></div></div>
+            <div style="height:200px;position:relative"><canvas id="chart-clicks"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GOOGLE ADS -->
+      <div class="tab-panel" id="panel-google">
+        <div class="section-label"><div class="section-label-icon" style="background:rgba(21,101,192,.1)">🎯</div><span class="section-label-text">Google Ads · Amakha Paris (407-456-8221)</span></div>
+        <div class="kpi-grid">
+          <div class="kpi-card gold"><span class="kpi-icon">💰</span><div class="kpi-label">Investimento</div><div class="kpi-value">$50.3k</div><div class="kpi-sub">30 dias</div></div>
+          <div class="kpi-card blue"><span class="kpi-icon">👁</span><div class="kpi-label">Impressões</div><div class="kpi-value">4.79M</div><div class="kpi-sub">Google Ads</div></div>
+          <div class="kpi-card green"><span class="kpi-icon">🖱</span><div class="kpi-label">Cliques</div><div class="kpi-value">120.6k</div><div class="kpi-sub">Google Ads</div></div>
+          <div class="kpi-card purple"><span class="kpi-icon">📈</span><div class="kpi-label">CTR</div><div class="kpi-value">2.52%</div><div class="kpi-sub">Cliques/Impressões</div></div>
+          <div class="kpi-card teal"><span class="kpi-icon">💵</span><div class="kpi-label">CPC Médio</div><div class="kpi-value">$0.42</div><div class="kpi-sub">Por clique</div></div>
+          <div class="kpi-card green"><span class="kpi-icon">✅</span><div class="kpi-label">Conversões</div><div class="kpi-value">331.9</div><div class="kpi-sub">Google Ads</div></div>
+          <div class="kpi-card red"><span class="kpi-icon">🎯</span><div class="kpi-label">CPA</div><div class="kpi-value">$151.71</div><div class="kpi-sub">Por conversão</div></div>
+          <div class="kpi-card gold"><span class="kpi-icon">📊</span><div class="kpi-label">Campanhas</div><div class="kpi-value">3</div><div class="kpi-sub">Ativas</div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card"><div class="chart-header"><div><div class="chart-title">Spend Diário — Google Ads</div><div class="chart-subtitle">Investimento real por dia</div></div></div><div style="height:200px;position:relative"><canvas id="chart-g-spend"></canvas></div></div>
+          <div class="chart-card"><div class="chart-header"><div><div class="chart-title">Conversões por Dia</div><div class="chart-subtitle">Volume real de conversões</div></div></div><div style="height:200px;position:relative"><canvas id="chart-g-conv"></canvas></div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card"><div class="chart-header"><div><div class="chart-title">CTR Diário</div><div class="chart-subtitle">Taxa de clique por dia</div></div></div><div style="height:200px;position:relative"><canvas id="chart-g-ctr"></canvas></div></div>
+          <div class="chart-card"><div class="chart-header"><div><div class="chart-title">CPA Diário</div><div class="chart-subtitle">Custo por aquisição — variação real</div></div></div><div style="height:200px;position:relative"><canvas id="chart-g-cpa"></canvas></div></div>
+        </div>
+      </div>
+
+      <!-- META ADS -->
+      <div class="tab-panel" id="panel-meta">
+        <div class="section-label"><div class="section-label-icon" style="background:rgba(103,80,164,.1)">📱</div><span class="section-label-text">Meta Ads · Amakha Paris #1 + B2B</span></div>
+        <div class="kpi-grid">
+          <div class="kpi-card gold"><span class="kpi-icon">💰</span><div class="kpi-label">Investimento</div><div class="kpi-value">$25.7k</div><div class="kpi-sub">Meta Ads</div></div>
+          <div class="kpi-card blue"><span class="kpi-icon">👥</span><div class="kpi-label">Alcance</div><div class="kpi-value">~2.1M</div><div class="kpi-sub">Usuários únicos est.</div></div>
+          <div class="kpi-card purple"><span class="kpi-icon">👁</span><div class="kpi-label">Impressões</div><div class="kpi-value">2.67M</div><div class="kpi-sub">Meta Ads</div></div>
+          <div class="kpi-card green"><span class="kpi-icon">🖱</span><div class="kpi-label">Cliques</div><div class="kpi-value">60.7k</div><div class="kpi-sub">Meta Ads</div></div>
+          <div class="kpi-card teal"><span class="kpi-icon">📈</span><div class="kpi-label">CTR</div><div class="kpi-value">2.27%</div><div class="kpi-sub">Cliques/Impressões</div></div>
+          <div class="kpi-card red"><span class="kpi-icon">💵</span><div class="kpi-label">CPC Médio</div><div class="kpi-value">$0.42</div><div class="kpi-sub">Por clique</div></div>
+          <div class="kpi-card blue"><span class="kpi-icon">📣</span><div class="kpi-label">CPM</div><div class="kpi-value">$9.62</div><div class="kpi-sub">Custo por 1k impr.</div></div>
+          <div class="kpi-card gold"><span class="kpi-icon">📋</span><div class="kpi-label">Campanhas</div><div class="kpi-value">8</div><div class="kpi-sub">Ativas</div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card"><div class="chart-header"><div><div class="chart-title">Spend Diário — Meta Ads</div><div class="chart-subtitle">Investimento real por dia</div></div></div><div style="height:200px;position:relative"><canvas id="chart-m-spend"></canvas></div></div>
+          <div class="chart-card"><div class="chart-header"><div><div class="chart-title">Impressões vs Cliques</div><div class="chart-subtitle">Meta Ads — evolução diária</div></div></div><div style="height:200px;position:relative"><canvas id="chart-m-clicks"></canvas></div></div>
+        </div>
+      </div>
+
+      <!-- CAMPANHAS -->
+      <div class="tab-panel" id="panel-campaigns">
+        <div class="section-label"><div class="section-label-icon" style="background:rgba(184,151,59,.12)">📋</div><span class="section-label-text">Campanhas · Google Ads — Dados Reais</span></div>
+        <div class="table-card">
+          <div class="table-header-row">
+            <div class="table-title">Top Campanhas · Google Ads</div>
+            <input class="table-search" type="text" placeholder="🔍 Buscar campanha..." oninput="filterTable(this)">
+          </div>
+          <table id="google-table">
+            <thead><tr><th onclick="sortT('google-table',0)">Campanha ↕</th><th>Status</th><th onclick="sortT('google-table',2)">Invest. ↕</th><th onclick="sortT('google-table',3)">Impr. ↕</th><th onclick="sortT('google-table',4)">Cliques ↕</th><th onclick="sortT('google-table',5)">CTR ↕</th><th onclick="sortT('google-table',6)">Conv. ↕</th><th onclick="sortT('google-table',7)">CPA ↕</th><th>Eficiência</th></tr></thead>
+            <tbody id="google-tbody"></tbody>
+          </table>
+        </div>
+        <div class="section-label" style="margin-top:8px"><div class="section-label-icon" style="background:rgba(103,80,164,.1)">📱</div><span class="section-label-text">Campanhas · Meta Ads — Dados Reais</span></div>
+        <div class="table-card">
+          <div class="table-header-row"><div class="table-title">Campanhas · Meta Ads</div></div>
+          <table><thead><tr><th>Campanha</th><th>Invest.</th><th>Impr.</th><th>Cliques</th><th>CTR</th><th>CPC</th><th>CPM</th></tr></thead>
+          <tbody id="meta-tbody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- FUNNEL -->
+      <div class="tab-panel" id="panel-funnel">
+        <div class="section-label"><div class="section-label-icon" style="background:rgba(184,151,59,.12)">🔽</div><span class="section-label-text">Funil de Conversão — Dados Reais</span></div>
+        <div class="funnel-grid">
+          <div class="funnel-step"><div class="funnel-step-label">Impressões</div><div class="funnel-step-value">7.47M</div><div class="funnel-step-rate">100%</div></div>
+          <div class="funnel-step"><div class="funnel-step-label">Cliques</div><div class="funnel-step-value">181.2k</div><div class="funnel-step-rate">2.43% CTR</div></div>
+          <div class="funnel-step"><div class="funnel-step-label">Sessions (est.)</div><div class="funnel-step-value">~126k</div><div class="funnel-step-rate">~70% dos cliques</div></div>
+          <div class="funnel-step"><div class="funnel-step-label">Engajamentos</div><div class="funnel-step-value">~44k</div><div class="funnel-step-rate">~35% sessions</div></div>
+          <div class="funnel-step"><div class="funnel-step-label">Conversões</div><div class="funnel-step-value">331.9</div><div class="funnel-step-rate">0.27% conv.</div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card"><div class="chart-header"><div><div class="chart-title">Funil Visual</div><div class="chart-subtitle">Impressões → Conversões</div></div></div><div style="height:240px;position:relative"><canvas id="chart-funnel"></canvas></div></div>
+          <div class="chart-card"><div class="chart-header"><div><div class="chart-title">CPA por Campanha</div><div class="chart-subtitle">Custo real por aquisição</div></div></div><div style="height:240px;position:relative"><canvas id="chart-cpa-camp"></canvas></div></div>
+        </div>
+      </div>
+
+      <!-- PERFORMANCE -->
+      <div class="tab-panel" id="panel-performance">
+        <div class="section-label"><div class="section-label-icon" style="background:rgba(184,151,59,.12)">⚡</div><span class="section-label-text">Performance Consolidada — Dados Reais</span></div>
+        <div class="charts-grid full">
+          <div class="chart-card">
+            <div class="chart-header"><div><div class="chart-title">Investimento Total Diário</div><div class="chart-subtitle">Google + Meta Ads — dados reais Windsor.ai</div></div><div class="chart-legend"><div class="legend-item"><div class="legend-dot" style="background:#B8973B"></div>Google</div><div class="legend-item"><div class="legend-dot" style="background:#888"></div>Meta</div><div class="legend-item"><div class="legend-dot" style="background:#2D6A4F"></div>Total</div></div></div>
+            <div style="height:160px;position:relative"><canvas id="chart-total"></canvas></div>
+          </div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card"><div class="chart-header"><div><div class="chart-title">Distribuição do Investimento</div><div class="chart-subtitle">Google vs Meta — share real</div></div></div><div style="display:flex;align-items:center;justify-content:center;padding:20px 0"><canvas id="chart-pie" height="200" width="200"></canvas></div></div>
+          <div class="chart-card"><div class="chart-header"><div><div class="chart-title">Conversões × CPA</div><div class="chart-subtitle">Eficiência diária Google Ads</div></div></div><div style="height:200px;position:relative"><canvas id="chart-eff"></canvas></div></div>
+        </div>
+      </div>
+
+      <!-- ALERTAS -->
+      <div class="tab-panel" id="panel-alerts">
+        <div class="section-label"><div class="section-label-icon" style="background:rgba(244,166,35,.12)">🔔</div><span class="section-label-text">Alertas e Recomendações — baseados nos dados reais</span></div>
+        <div class="alerts-grid">
+          <div class="alert-card success"><div class="alert-title">✅ Ecommerce Pmax com melhor volume</div><div class="alert-body">Campanha Ecommerce_Pmax gerou $50.3k investidos com 120.6k cliques. CPC de $0.42 muito eficiente. Considere escalar budget.</div></div>
+          <div class="alert-card warning"><div class="alert-title">⚠️ CPA em alta no dia 14/06</div><div class="alert-body">CPA atingiu $442.31 em 14/jun com apenas 4 conversões e $1.769 investidos. Revisar estratégia de lances nesse período.</div></div>
+          <div class="alert-card danger"><div class="alert-title">🔴 Meta Ads sem conversões rastreadas</div><div class="alert-body">Nenhuma conversão reportada nas campanhas Meta Ads. Verifique implementação do Pixel no site amakhaparis.com.br e eventos configurados.</div></div>
+          <div class="alert-card success"><div class="alert-title">✅ Pico de performance em 02/06</div><div class="alert-body">06/06 registrou o melhor CPA: $83.25 com 19.3 conversões. Analisar condições desse dia (criativos, lances, horários) para replicar.</div></div>
+          <div class="alert-card info"><div class="alert-title">ℹ️ TOPO Geração de demanda com baixa conv.</div><div class="alert-body">Campanha TOPO gerou majoritariamente 0 conversões por dia. Avaliar se o objetivo deve ser conversão ou awareness/tráfego.</div></div>
+          <div class="alert-card info"><div class="alert-title">ℹ️ Spike em 04/06 — investigar</div><div class="alert-body">Gasto de $3.221 em 04/06 foi 2.7x acima da média. Verificar se houve mudança de budget ou evento especial nessa data.</div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card"><div class="chart-header"><div><div class="chart-title">CPA Diário — Variação Real</div><div class="chart-subtitle">Google Ads — custo por aquisição</div></div></div><div style="height:240px;position:relative"><canvas id="chart-alert-cpa"></canvas></div></div>
+          <div class="chart-card"><div class="chart-header"><div><div class="chart-title">Investimento por Campanha</div><div class="chart-subtitle">Google Ads — share do budget</div></div></div><div style="display:flex;align-items:center;justify-content:center;padding:10px 0"><canvas id="chart-camp-pie" height="220" width="220"></canvas></div></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// ===== AUTH =====
+let currentUserType = 'agencia';
+const users = {
+  agencia:{user:'modesto',pass:'modesto@2026',name:'Modesto GP',role:'Agência',avatar:'M'},
+  cliente:{user:'amakhaparis',pass:'amakha@2026',name:'Amakha Paris',role:'Cliente',avatar:'A'}
+};
+function setUser(t,btn){currentUserType=t;document.querySelectorAll('.user-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pass').value.trim();
+  const v=users[currentUserType];
+  if(u===v.user&&p===v.pass){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').classList.add('visible');
+    document.getElementById('sb-name').textContent=v.name;
+    document.getElementById('sb-role').textContent=v.role;
+    document.getElementById('sb-avatar').textContent=v.avatar;
+    initAllCharts();populateTables();
+  } else {document.getElementById('login-error').style.display='block';}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+function doLogout(){document.getElementById('app').classList.remove('visible');document.getElementById('login-screen').style.display='flex';}
+
+// ===== NAV =====
+const panelTitles={overview:'Resumo Geral',google:'Google Ads',meta:'Meta Ads',campaigns:'Campanhas',funnel:'Funil de Conversão',performance:'Performance',alerts:'Alertas'};
+function showPanel(id,el){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('page-title').textContent=panelTitles[id];
+}
+function setRange(d,btn){document.querySelectorAll('.quick-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function applyFilter(){}
+
+// ===== REAL DATA =====
+const dates=["05/17","05/18","05/19","05/20","05/21","05/22","05/23","05/24","05/25","05/26","05/27","05/28","05/29","05/30","05/31","06/01","06/02","06/03","06/04","06/05","06/06","06/07","06/08","06/09","06/10","06/11","06/12","06/13","06/14","06/15"];
+const gSpend=[1710.08,1341.18,1462.34,1804.9,1692.75,1530.64,2050.33,2325.89,1896.64,1976.53,2006.91,1586.12,1631.75,1321.85,1760.55,1842.94,1760.54,1012.71,3221.81,1807.75,1608.39,1759.85,1019.19,911.06,1168.49,1816.4,1277.38,1666.63,1769.26,1605.18];
+const mSpend=[1085.98,893.27,830.77,862.87,785.59,735.34,699.38,905.75,747.32,770.71,794.52,831.62,784.45,798.48,1027.73,903.84,801.91,752.02,804.12,751.1,742.07,952.54,817.83,883.46,957.12,928.3,852.0,942.17,1115.66,974.52];
+const gClicks=[4365,3371,2960,4520,3356,3558,4926,5061,3995,5021,5022,3559,4223,3884,4208,3509,3065,2301,8593,4236,3711,3923,2677,2693,3464,4928,2947,3758,4479,4264];
+const mClicks=[2832,2238,2163,2155,2037,1733,1839,2615,1814,2044,2104,1832,1909,2137,2560,2315,2113,1690,1936,1732,1437,2170,1751,1870,2049,1787,1665,1775,2368,1995];
+const gConv=[16.9,10.49,7.05,19.5,11.43,5.0,10.46,15.97,11.01,9.0,7.53,16.0,10.66,8.82,11.41,18.02,20.08,4.74,11.59,18.63,19.32,8.99,7.83,8.77,10.68,7.8,6.41,8.22,4.0,5.55];
+const gCPA=[101.19,127.85,207.42,92.56,148.1,306.13,196.02,145.64,172.27,219.61,266.52,99.13,153.07,149.87,154.3,102.27,87.68,213.65,277.98,97.03,83.25,195.76,130.16,103.88,109.41,232.87,199.28,202.75,442.31,289.22];
+const gCTR=[2.91,2.55,2.2,2.43,2.17,2.19,2.32,2.33,2.3,2.39,2.65,2.18,2.63,2.73,2.68,2.17,2.02,2.5,2.77,2.36,2.49,2.69,3.29,3.76,3.24,2.78,2.37,2.5,2.64,2.46];
+const mImpr=[117457,93483,94810,95511,94342,78245,83523,93528,77899,78361,81611,69345,72894,83212,96152,91709,83202,67820,73837,71896,66840,96991,90799,88178,103479,87219,100994,97776,137806,105125];
+const mReach=[91563,66053,76952,76019,70279,56924,60578,63054,67220,60840,62939,54276,58471,71970,79950,72910,62133,53617,58234,57522,57570,75673,79453,68525,79126,64571,78612,75428,116657,90183];
+
+const gold='#B8973B';const goldA='rgba(184,151,59,.15)';const gray='#888';const green='#2D6A4F';const greenA='rgba(45,106,79,.1)';const blue='#1565C0';const red='#B71C1C';
+const baseOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},color:'#999'}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},color:'#999'}}}};
+
+// Campaign real data
+const gCampaigns=[
+  {name:'Ecommerce_Pmax_Sul+Sudeste+CentroOeste+Capitais NE',invest:46850.5,impr:4247960,clicks:111038,ctr:2.61,conv:314.95,cpa:148.75,status:'Ativa'},
+  {name:'TOPO Geração de demanda',invest:2862.3,impr:722360,clicks:22268,ctr:3.08,conv:18.98,cpa:150.8,status:'Ativa'},
+  {name:'Awareness_Search_BR',invest:633.24,impr:44710,clicks:1271,ctr:2.84,conv:7.01,cpa:90.33,status:'Ativa'},
+];
+const mCampaigns=[
+  {name:'[Ecommerce] Always On | Conversões',invest:7682.4,impr:591070,clicks:9699,ctr:1.64,cpc:0.79,cpm:13.00},
+  {name:'[Ecommerce] Conversões | UGC - 2026',invest:4453.5,impr:330080,clicks:5985,ctr:1.81,cpc:0.74,cpm:13.49},
+  {name:'[Você Digital] Leads-MAR25',invest:2759.5,impr:213122,clicks:7448,ctr:3.49,cpc:0.37,cpm:12.95},
+  {name:'[Ecommerce] Conversões | UGC',invest:3832.3,impr:257440,clicks:5889,ctr:2.29,cpc:0.65,cpm:14.88},
+  {name:'[Ecommerce] Engajamento',invest:1810.2,impr:441700,clicks:10494,ctr:2.38,cpc:0.17,cpm:4.10},
+  {name:'[Ecommerce] Tráfego Geração de Demanda',invest:1361.5,impr:199050,clicks:7390,ctr:3.71,cpc:0.18,cpm:6.84},
+  {name:'[Ecommerce] Conversões | Promos — Otimizado',invest:514.87,impr:22500,clicks:752,ctr:3.34,cpc:0.68,cpm:22.88},
+  {name:'[WhatsApp] Campanha comercios',invest:289.04,impr:9471,clicks:306,ctr:3.23,cpc:0.94,cpm:30.52},
+];
+
+function populateTables(){
+  const gtb=document.getElementById('google-tbody');
+  gCampaigns.forEach(c=>{
+    const perf=Math.min(100,Math.round((1-(c.cpa/300))*100));
+    const row=document.createElement('tr');
+    row.innerHTML=`<td class="campaign-name" title="${c.name}">${c.name}</td><td><span class="status-badge status-active">${c.status}</span></td><td>$${(c.invest/1000).toFixed(1)}k</td><td>${(c.impr/1000000).toFixed(2)}M</td><td>${(c.clicks/1000).toFixed(1)}k</td><td>${c.ctr.toFixed(2)}%</td><td>${c.conv.toFixed(1)}</td><td>$${c.cpa.toFixed(2)}</td><td><span class="perf-bar"><span class="perf-fill" style="width:${perf}%"></span></span>${perf}%</td>`;
+    gtb.appendChild(row);
+  });
+  const mtb=document.getElementById('meta-tbody');
+  mCampaigns.forEach(c=>{
+    const row=document.createElement('tr');
+    row.innerHTML=`<td class="campaign-name">${c.name}</td><td>$${(c.invest/1000).toFixed(2)}k</td><td>${(c.impr/1000).toFixed(1)}k</td><td>${(c.clicks/1000).toFixed(1)}k</td><td>${c.ctr.toFixed(2)}%</td><td>$${c.cpc.toFixed(2)}</td><td>$${c.cpm.toFixed(2)}</td>`;
+    mtb.appendChild(row);
+  });
+}
+
+function filterTable(inp){const q=inp.value.toLowerCase();document.querySelectorAll('#google-tbody tr').forEach(r=>{r.style.display=r.cells[0].textContent.toLowerCase().includes(q)?'':'none';});}
+function sortT(tid,col){const tb=document.getElementById(tid).querySelector('tbody');const rows=Array.from(tb.rows);rows.sort((a,b)=>{const va=a.cells[col].textContent.replace(/[$k,M%]/g,'');const vb=b.cells[col].textContent.replace(/[$k,M%]/g,'');return isNaN(va)?va.localeCompare(vb):parseFloat(vb)-parseFloat(va);});rows.forEach(r=>tb.appendChild(r));}
+
+let chartsInited={};
+function mkChart(id,type,data,opts){if(chartsInited[id])return;chartsInited[id]=true;new Chart(document.getElementById(id),{type,data,options:{...baseOpts,...opts}});}
+
+function initAllCharts(){
+  // Overview
+  mkChart('chart-invest','line',{labels:dates,datasets:[{label:'Google',data:gSpend,borderColor:gold,backgroundColor:goldA,fill:true,tension:.4,pointRadius:2,pointBackgroundColor:gold},{label:'Meta',data:mSpend,borderColor:gray,backgroundColor:'rgba(100,100,100,.05)',fill:true,tension:.4,borderDash:[5,4],pointRadius:2}]},{});
+  mkChart('chart-cpa','bar',{labels:dates,datasets:[{label:'CPA($)',data:gCPA,backgroundColor:gCPA.map(v=>v>200?red:v>150?'#F4A623':gold),borderRadius:4,yAxisID:'y'},{label:'Conv',data:gConv,type:'line',borderColor:green,tension:.4,pointRadius:2,yAxisID:'y1',fill:false}]},{plugins:{legend:{display:true,labels:{font:{size:10},color:'#666',boxWidth:10}}},scales:{x:{ticks:{font:{size:9},color:'#999'},grid:{color:'rgba(0,0,0,0.04)'}},y:{position:'left',ticks:{font:{size:9},color:'#999'},grid:{color:'rgba(0,0,0,0.04)'}},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:9},color:'#999'}}}});
+  mkChart('chart-ctr-bar','bar',{labels:['Google Ads','Meta Ads'],datasets:[{data:[2.52,2.27],backgroundColor:[gold,gray],borderRadius:8}]},{scales:{x:{grid:{display:false},ticks:{color:'#999'}},y:{ticks:{color:'#999',callback:v=>v+'%'},grid:{color:'rgba(0,0,0,0.04)'}}}});
+  mkChart('chart-clicks','line',{labels:dates,datasets:[{label:'Google',data:gClicks,borderColor:gold,fill:false,tension:.4,pointRadius:2},{label:'Meta',data:mClicks,borderColor:gray,borderDash:[4,3],fill:false,tension:.4,pointRadius:2}]},{plugins:{legend:{display:true,labels:{font:{size:10},color:'#666',boxWidth:10}}}});
+
+  // Google
+  mkChart('chart-g-spend','line',{labels:dates,datasets:[{data:gSpend,borderColor:gold,backgroundColor:goldA,fill:true,tension:.4,pointRadius:2}]},{});
+  mkChart('chart-g-conv','bar',{labels:dates,datasets:[{data:gConv,backgroundColor:green,borderRadius:4}]},{});
+  mkChart('chart-g-ctr','line',{labels:dates,datasets:[{data:gCTR,borderColor:blue,backgroundColor:'rgba(21,101,192,.08)',fill:true,tension:.4,pointRadius:2}]},{scales:{x:{ticks:{font:{size:9},color:'#999'},grid:{color:'rgba(0,0,0,0.04)'}},y:{ticks:{font:{size:9},color:'#999',callback:v=>v+'%'},grid:{color:'rgba(0,0,0,0.04)'}}}});
+  mkChart('chart-g-cpa','line',{labels:dates,datasets:[{data:gCPA,borderColor:red,backgroundColor:'rgba(183,28,28,.08)',fill:true,tension:.4,pointRadius:2}]},{scales:{x:{ticks:{font:{size:9},color:'#999'},grid:{color:'rgba(0,0,0,0.04)'}},y:{ticks:{font:{size:9},color:'#999',callback:v=>'$'+v},grid:{color:'rgba(0,0,0,0.04)'}}}});
+
+  // Meta
+  mkChart('chart-m-spend','line',{labels:dates,datasets:[{data:mSpend,borderColor:'#6A1B9A',backgroundColor:'rgba(106,27,154,.08)',fill:true,tension:.4,pointRadius:2}]},{});
+  mkChart('chart-m-clicks','line',{labels:dates,datasets:[{label:'Impressões/100',data:mImpr.map(v=>Math.round(v/100)),borderColor:gray,borderDash:[4,3],fill:false,tension:.4,pointRadius:2},{label:'Cliques',data:mClicks,borderColor:'#6A1B9A',fill:false,tension:.4,pointRadius:2}]},{plugins:{legend:{display:true,labels:{font:{size:10},color:'#666',boxWidth:10}}}});
+
+  // Funnel
+  mkChart('chart-funnel','bar',{labels:['Impressões (M)','Cliques (k)','Sessions (k)','Engaj. (k)','Conversões'],datasets:[{data:[7.47,181.2,126,44,0.33],backgroundColor:[gold+'CC','#B8973B99','#B8973B77','#B8973B55',green],borderRadius:6}]},{indexAxis:'y'});
+  mkChart('chart-cpa-camp','bar',{labels:gCampaigns.map(c=>c.name.substring(0,22)+'…'),datasets:[{data:gCampaigns.map(c=>c.cpa),backgroundColor:gCampaigns.map(c=>c.cpa>200?red:c.cpa>150?'#F4A623':green),borderRadius:4}]},{indexAxis:'y',scales:{x:{ticks:{callback:v=>'$'+v,color:'#999',font:{size:10}},grid:{color:'rgba(0,0,0,0.04)'}},y:{ticks:{font:{size:10},color:'#999'},grid:{display:false}}}});
+
+  // Performance
+  const total=gSpend.map((v,i)=>v+mSpend[i]);
+  mkChart('chart-total','line',{labels:dates,datasets:[{label:'Google',data:gSpend,borderColor:gold,backgroundColor:goldA,fill:true,tension:.4,pointRadius:2},{label:'Meta',data:mSpend,borderColor:gray,backgroundColor:'rgba(100,100,100,.05)',fill:true,tension:.4,borderDash:[4,3],pointRadius:2},{label:'Total',data:total,borderColor:green,fill:false,tension:.4,borderWidth:2,pointRadius:2}]},{plugins:{legend:{display:true,labels:{font:{size:10},color:'#666',boxWidth:10}}}});
+  mkChart('chart-pie','doughnut',{labels:['Google Ads ($50.3k)','Meta Ads ($25.7k)'],datasets:[{data:[50346,25732],backgroundColor:[gold,'#666'],borderWidth:0,hoverOffset:6}]},{responsive:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},color:'#666',boxWidth:12,padding:12}}}});
+  mkChart('chart-eff','line',{labels:dates,datasets:[{label:'Conversões',data:gConv,borderColor:green,fill:false,tension:.4,pointRadius:2,yAxisID:'y'},{label:'CPA',data:gCPA,borderColor:red,fill:false,tension:.4,borderDash:[4,3],pointRadius:2,yAxisID:'y1'}]},{plugins:{legend:{display:true,labels:{font:{size:10},color:'#666',boxWidth:10}}},scales:{x:{ticks:{font:{size:9},color:'#999'},grid:{color:'rgba(0,0,0,0.04)'}},y:{position:'left',ticks:{font:{size:9},color:'#999'},grid:{color:'rgba(0,0,0,0.04)'}},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:9},color:'#999',callback:v=>'$'+v}}}});
+
+  // Alerts
+  mkChart('chart-alert-cpa','line',{labels:dates,datasets:[{data:gCPA,borderColor:gCPA.map(v=>v>200?red:gold),backgroundColor:'rgba(184,151,59,.08)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:gCPA.map(v=>v>200?red:gold)}]},{scales:{x:{ticks:{font:{size:9},color:'#999'},grid:{color:'rgba(0,0,0,0.04)'}},y:{ticks:{font:{size:9},color:'#999',callback:v=>'$'+v},grid:{color:'rgba(0,0,0,0.04)'}}}});
+  mkChart('chart-camp-pie','doughnut',{labels:['Ecommerce Pmax','TOPO Geração','Awareness'],datasets:[{data:[46850,2862,633],backgroundColor:[gold,'#666',green],borderWidth:0}]},{responsive:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},color:'#666',boxWidth:10,padding:10}}}});
+}
+</script>
+</body>
+</html>
