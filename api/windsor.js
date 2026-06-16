@@ -33,7 +33,6 @@ export default async function handler(req, res) {
   try {
     const upstream = await fetch(`https://connectors.windsor.ai/v1?${params}`);
     const data = await upstream.json();
-    // Windsor returns array directly
     const rows = Array.isArray(data) ? data : (data.data || data.results || []);
     return res.status(200).json({ rows });
   } catch (e) {
